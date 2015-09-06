@@ -1,6 +1,6 @@
 
-from .helpers import *
-from .brandnew_structure import *
+from helpers import *
+from brandnew_structure import *
 
 from numpy import arange
 

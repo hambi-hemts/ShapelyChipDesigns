@@ -1,11 +1,11 @@
 
-from helpers import *
+from .helpers import *
 from descartes import *
 #from gdsCAD import *
 from shapely.geometry import *
 from shapely.affinity import *
 from shapely.ops import unary_union, cascaded_union
-from in_out_show import showPolygons
+from .in_out_show import showPolygons
 from matplotlib import pylab, mlab, pyplot, cm
 from matplotlib.pyplot import axis, plot, legend
 plt = pyplot
@@ -33,9 +33,12 @@ class LAYER:
         self.NAME   = name
         self.ANKERS = {}
         
-    def add_polis(self, additional_polis):
-        newpolis = unary_union(self.POLIS+additional_polis)
-        newpolis = list(flattenMultipoly(newpolis))
+    def add_polis(self, additional_polis, union=True):
+        if union:
+            newpolis = unary_union(self.POLIS+additional_polis)
+            newpolis = list(flattenMultipoly(newpolis))
+        else: 
+            newpolis = self.POLIS + additional_polis
         self.POLIS = newpolis#list(np.hstack(newpolis))
         
     def get_polis(self):
@@ -178,15 +181,24 @@ class BRAND_NEW_STRUCTURE:
                 Slayer.add_anker(ankers[a],a)
         return S
         
-    def show_info(self):
-        colormap = plt.cm.rainbow
+    def show_info(self, alpha=0.65, hatch=None, fill=True, colormap = plt.cm.rainbow):
+    
+        hatches=['.', '/', '\'', '\\', '//', '\\\\', '///', '*']
+        colormap = colormap
         colors = [colormap(i) for i in np.linspace(0.0, 1.0, 1+len(list(self.layers.keys())))]
         for j,k in enumerate(self.layers.keys()):
             L = getattr(self,k)
             polys = L.get_polis()
+            
+            if hatch:
+                i = j%len(hatches)
+                thehatch = hatches[i]
+            else:
+                thehatch=''
+                
             if len(polys):
-                gca().add_patch(PolygonPatch(empty(),fc=colors[j],alpha=0.85,label=k))
-            showPolygons(polys,[colors[j]]*len(polys))
+                gca().add_patch(PolygonPatch(empty(),fc=colors[j],alpha=alpha,hatch=thehatch, label=k))
+            showPolygons(polys,[colors[j]]*len(polys), alpha=alpha, hatch=thehatch, fill=fill)
         ankers = self.get_ankers()
         ankers = self.ANKERS
         print(ankers)

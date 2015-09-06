@@ -22,7 +22,7 @@ def invert_polarity(BoundingBox, Polygons):
         if not s.is_valid:
             pass
         else: 
-            GRnew = SD.flattenMultipolyG([GS.difference(s) for GS in GRold])
+            GRnew = flattenMultipolyG([GS.difference(s) for GS in GRold])
             GRold = GRnew
         
     return list(GRnew)
